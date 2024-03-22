@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CMI | @yield('title')</title>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
+    <link rel="stylesheet" type="text/css" href="/trix.css">
+    <script type="text/javascript" src="/trix.js"></script>
     <link rel="shortcut icon" href="{{ URL::to('/public/img') }}/favicon.ico" type="image/x-icon">
 
     <!-- Global stylesheets -->
@@ -16,6 +19,7 @@
     <link href="{{ URL::to('/public/admin') }}/assets/css/icons/fontawesome/styles.min.css" rel="stylesheet"
         type="text/css">
     <link href="{{ URL::to('/public/admin') }}/assets/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.3/dist/quill.snow.css" rel="stylesheet" />
     <link href="{{ URL::to('/public/admin') }}/assets/css/core.css" rel="stylesheet" type="text/css">
     <link href="{{ URL::to('/public/admin') }}/assets/css/components.css" rel="stylesheet" type="text/css">
     <link href="{{ URL::to('/public/admin') }}/assets/css/colors.css" rel="stylesheet" type="text/css">
