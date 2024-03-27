@@ -37,35 +37,6 @@
     </div>
 
     <div class="col-md-6">
-        <!-- <div class="panel">
-            <div class="panel-heading">
-                <h5 class="panel-title">Persentase Kehadiran </h5>
-                <div class="heading-elements">
-                    <form class="heading-form" method="post" action="{{ route('staff.presensi') }}">
-                        @csrf
-                        <div class="form-group">
-                            <select class="select" name="month" onchange="this.form.submit();">
-                                @foreach ($months as $value => $key)
-                                    <option value="{{ $key }}" {{ $bulanIni == $key ? 'selected' : '' }}>
-                                        {{ $value }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="panel-body">
-                <div class="text-center">
-                    @if ($checkData != 0)
-                        <canvas id="chartData"></canvas>
-                    @else
-                        Belum Ada Data!!
-                    @endif
-                </div>
-            </div>
-        </div> -->
 
         <div class="panel">
 
@@ -229,7 +200,7 @@
                 <div class="row text-center">
                     <div class="col-md-3">
                         <div class="content-group">
-                            <h5 class="text-semibold no-margin"><i class="fa fa-clock-o position-left text-slate"></i>
+                            <h5 class="text-semibold no-margin"><i class="fa fa-clock-o  text-slate"></i>
                                 {{ date('H:i', strtotime($peraturan->jam_masuk)) }}
                             </h5>
                             <span class="text-muted text-size-small">Jam Masuk</span>
@@ -239,7 +210,7 @@
                     <div class="col-md-3">
                         <div class="content-group">
                             <h5 class="text-semibold no-margin"><i
-                                    class="fa fa-clock-o position position-left text-slate"></i>
+                                    class="fa fa-clock-o position  text-slate"></i>
                                 {{ date('H:i', strtotime($peraturan->jam_plg)) }}
                             </h5>
                             <span class="text-muted text-size-small">Jam Pulang</span>
@@ -248,7 +219,7 @@
 
                     <div class="col-md-3">
                         <div class="content-group">
-                            <h5 class="text-semibold no-margin"><i class="fa fa-hourglass-1 position-left text-slate"></i>
+                            <h5 class="text-semibold no-margin"><i class="fa fa-hourglass-1  text-slate"></i>
                                 {{ $peraturan->syarat_bulan_cuti_tahunan }} Bln
                             </h5>
                             <span class="text-muted text-size-small">Durasi Kerja untuk Cuti Tahunan</span>
@@ -256,7 +227,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="content-group">
-                            <h5 class="text-semibold no-margin"><i class="fa fa-hourglass position-left text-slate"></i>
+                            <h5 class="text-semibold no-margin"><i class="fa fa-hourglass  text-slate"></i>
                                 {{ $peraturan->syarat_bulan_cuti_besar }} Bln
                             </h5>
                             <span class="text-muted text-size-small">Durasi Kerja untuk Cuti Besar</span>
@@ -402,34 +373,217 @@
 
     </div>
 
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel">
+                <div class="panel-heading bg-info">
+                    <h5 class="panel-title">Riwayat Tidak Hadir (Termasuk Cuti)</h5>
+                    <div class="heading-elements">
+                        <ul class="icons-list">
+                            <li><a data-action="collapse"></a></li>
+                            <li><a data-action="reload"></a></li>
+                            <li><a data-action="close"></a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="table-responsive pre-scrollable">
+                    <table class="table datatable-basic">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Keterangan</th>
+                                <th hidden></th>
+                                <th hidden></th>
+                                <th hidden></th>
+                                <th hidden></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($riwayatTdkHadir->count())
+                                @foreach ($riwayatTdkHadir as $key => $p)
+                                    <tr>
+                                        <td>{{ $p->tanggal }}</td>
+                                        <td>
+                                            @if ($p->ket == 'Alpha')
+                                                <span class="label label-danger">Alpha</span>
+                                            @elseif ($p->ket == "Cuti") <span class="label bg-primary">
+                                                    Cuti</span>
+                                            @endif
+                                        </td>
+                                        <td hidden></td>
+                                        <td hidden></td>
+                                        <td hidden></td>
+                                        <td hidden></td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <!-- Basic pie chart -->
+            <div class="panel">
+                <div class="panel-heading bg-info">
+                    <h5 class="panel-title">Persentase Kehadiran Bulan Ini</h5>
+                    <div class="heading-elements">
+                        <ul class="icons-list">
+                            <li><a data-action="reload"></a></li>
+                            <li><a data-action="close"></a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <div class="text-center">
+                        @if ($checkData != 0)
+                            <canvas id="chartPersentase"></canvas>
+                        @else
+                            Belum Ada Data!!
+                        @endif
+                      
+                    </div>
+                </div>
+
+            </div>
+            <!-- /bacis pie chart -->
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-heading bg-info">
+                    <h5 class="panel-title">Riwayat Pembuatan Konten Pegawai</h5>
+                    <div class="heading-elements">
+                        <ul class="icons-list">
+                            <li><a data-action="collapse"></a></li>
+                            <li><a data-action="reload"></a></li>
+                            <li><a data-action="close"></a></li>
+                        </ul>
+                    </div>
+                </div>
+               
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NoPeg</th>
+                                @for($i = 1; $i <= $jmltgl; $i++)
+                                    <th width="3%">{{ $i }}</th>
+                                @endfor
+                                                
+                            </tr>
+                        </thead>
+                        @php
+                            $no = 1;
+                        @endphp
+                        <tbody>
+                                @foreach ($results_second as $r => $k)
+                                    <tr>
+                                       <td>{{ $no }}</td>
+                                       <td>{{ @$k->nip }}</td>
+                                       <td>{{ @$k->{'1'} }}</td>
+                                       <td>{{ @$k->{'2'} }}</td>
+                                       <td>{{ @$k->{'3'} }}</td>
+                                       <td>{{ @$k->{'4'} }}</td>
+                                       <td>{{ @$k->{'5'} }}</td>
+                                       <td>{{ @$k->{'6'} }}</td>
+                                       <td>{{ @$k->{'7'} }}</td>
+                                       <td>{{ @$k->{'8'} }}</td>
+                                       <td>{{ @$k->{'9'} }}</td>
+                                       <td>{{ @$k->{'10'} }}</td>
+                                       <td>{{ @$k->{'11'} }}</td>
+                                       <td>{{ @$k->{'12'} }}</td>
+                                       <td>{{ @$k->{'13'} }}</td>
+                                       <td>{{ @$k->{'14'} }}</td>
+                                       <td>{{ @$k->{'15'} }}</td>
+                                       <td>{{ @$k->{'16'} }}</td>
+                                       <td>{{ @$k->{'17'} }}</td>
+                                       <td>{{ @$k->{'18'} }}</td>
+                                       <td>{{ @$k->{'19'} }}</td>
+                                       <td>{{ @$k->{'20'} }}</td>
+                                       <td>{{ @$k->{'21'} }}</td>
+                                       <td>{{ @$k->{'22'} }}</td>
+                                       <td>{{ @$k->{'23'} }}</td>
+                                       <td>{{ @$k->{'24'} }}</td>
+                                       <td>{{ @$k->{'25'} }}</td>
+                                       <td>{{ @$k->{'26'} }}</td> 
+                                       <td>{{ @$k->{'27'} }}</td>
+                                       <td>{{ @$k->{'28'} }}</td>
+                                       <td>{{ @$k->{'29'} }}</td>
+                                       <td>{{ @$k->{'30'} }}</td>
+                                       <td>{{ @$k->{'31'} }}</td>
+                                    </tr>
+                                @endforeach
+                          
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
 @endsection
 @section('custom_script')
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
     <script>
-        var oilCanvas = document.getElementById("chartData");
+        
+        // var oilCanvas = document.getElementById("chartData");
 
-        Chart.defaults.global.defaultFontColor = 'black';
-        Chart.defaults.global.defaultFontSize = 13;
+        // Chart.defaults.global.defaultFontColor = 'black';
+        // Chart.defaults.global.defaultFontSize = 13;
 
-        var inputData = {
-            labels: [
-                "Hadir",
-                "Tidak Hadir",
-            ],
-            datasets: [{
-                data: [{{ $persentaseHadir }}, {{ $persentaseTdkHadir }}],
-                backgroundColor: [
-                    "navy",
-                    "red",
-                ]
-            }]
-        };
+        // var inputData = {
+        //     labels: [
+        //         "Hadir",
+        //         "Tidak Hadir",
+        //     ],
+        //     datasets: [{
+        //         data: [{{ $persentaseHadir }}, {{ $persentaseTdkHadir }}],
+        //         backgroundColor: [
+        //             "navy",
+        //             "red",
+        //         ]
+        //     }]
+        // };
 
-        var pieChart = new Chart(oilCanvas, {
-            type: 'pie',
-            data: inputData
-        });
+        // var pieChart = new Chart(oilCanvas, {
+        //     type: 'pie',
+        //     data: inputData
+        // });
+
+
+        var secondCanvas = document.getElementById("chartPersentase");
+
+            Chart.defaults.global.defaultFontColor = 'black';
+            Chart.defaults.global.defaultFontSize = 12;
+
+            var oilData = {
+                labels: [
+                    "Hadir",
+                    "Tidak Hadir",
+                ],
+                datasets: [{
+                    data: [{{ $persentaseHadir }}, {{ $persentaseTdkHadir }}],
+                    backgroundColor: [
+                        "teal",
+                        "red",
+                    ]
+                }]
+            };
+
+            var secondChart = new Chart(secondCanvas, {
+                type: 'pie',
+                data: oilData
+            });
     </script>
 
 

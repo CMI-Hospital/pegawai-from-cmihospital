@@ -105,7 +105,7 @@ return redirect()->route('articles.index')->with('success', 'Article deleted suc
 
     public function manage()
     {
-        $articles = Article::where('approved', false)
+        $articles = Artikel::where('approved', false)
                     ->orderBy('created_at', 'desc')
                     ->get();
 

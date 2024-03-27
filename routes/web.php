@@ -294,6 +294,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/artikelWeb', [ArtikelWebController::class, 'store'])->name('artikelWeb.store');
     Route::get('/daftarArtikel', [ArtikelWebController::class, 'artikelFilter'])->name('artikelWeb.artikelFilter');
     Route::post('/daftarArtikel', [ArtikelWebController::class, 'artikelFilterByDate'])->name('artikelWeb.artikelFilterByDate');
+    Route::get('/verifikasiArtikelWeb', [ArtikelWebController::class, 'artikelVerifikasi'])->name('artikelWeb.verifikasiArtikelFilter');
+    Route::post('/verifikasiArtikelWeb', [ArtikelWebController::class, 'artikelVerifikasiByDate'])->name('artikelWeb.verifikasiArtikelFilterByDate');
+    Route::post('/verifikasi/{id}', [ArtikelWebController::class, 'verifikasi']);
+    Route::post('/unverifikasi/{id}', [ArtikelWebController::class, 'unverifikasi']);
     Route::get('/artikelWeb/list', [ArtikelWebController::class, 'list'])->name('artikelWeb.list');
     Route::get('/manage/artikelWeb', [ArtikelWebController::class, 'manage'])->name('artikelWeb.manage');
     Route::get('/rekap/artikelWeb', [ArtikelWebController::class, 'rekap'])->name('artikelWeb.rekap');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Absensi;
 use App\Models\Pegawai;
 use App\Models\Peraturan;
 use App\Models\Presensi_harian;
@@ -61,6 +62,7 @@ class RekapPresensiController extends Controller
     {
         //
         $id = Crypt::decryptString($data);
+        $no_pegawai = Pegawai::find($id)->no_pegawai;
         $intMonth = date('m');
         $year = date('Y');
         $hari = cal_days_in_month(CAL_GREGORIAN, $intMonth, date('Y'));
@@ -71,34 +73,34 @@ class RekapPresensiController extends Controller
         $jam_plg = $peraturan->jam_plg;
 
 
-        $telat = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->where('jam_dtg', '>', $jam_masuk)
+        $telat = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('absen_masuk', '>', $jam_masuk)
             ->count();
 
-        $tepatWaktu = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->where('jam_dtg', '<', $jam_masuk)
-            ->where('jam_plg', '>', $jam_plg)
+        $tepatWaktu = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('absen_masuk', '<', $jam_masuk)
+            ->where('absen_keluar', '>', $jam_plg)
             ->count();
 
-        $pulangAwal = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->where('jam_plg', '<', $jam_plg)
+        $pulangAwal = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('absen_keluar', '<', $jam_plg)
             ->count();
 
-        $alpha = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->where('ket', "Alpha")
+        $alpha = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('info_masuk', 4)
             ->count();
 
-        $checkData = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
+        $checkData = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
             ->count();
 
 
@@ -107,20 +109,26 @@ class RekapPresensiController extends Controller
         $persentaseHadir = number_format($hadir, 2);
         $TdkHadir = 100 - $persentaseHadir;
         $persentaseTdkHadir = number_format($TdkHadir, 2);
-
-        $riwayatTdkHadir = Presensi_harian::where('id_pegawai', $id)
-            ->where('ket', '!=', 'Hadir')
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->orderBy('tanggal', 'desc')
+        
+        $riwayatTdkHadir = Absensi::where('no_pegawai', $no_pegawai)
+            ->where('info_masuk', '=', 4)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        $riwayatKehadiran = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('info_masuk', '!=', 4)
             ->get();
 
-        $riwayatTdkDisiplin = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
+        $riwayatTdkDisiplin = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
             ->where(function ($query) use ($jam_masuk, $jam_plg) {
-                $query->where('jam_dtg', '>', $jam_masuk)
-                    ->orWhere('jam_plg', '<', $jam_plg);
+                $query->where('absen_masuk', '>', $jam_masuk)
+                    ->orWhere('absen_keluar', '<', $jam_plg);
             })->get();
 
         $months = [
@@ -138,6 +146,7 @@ class RekapPresensiController extends Controller
             'persentaseHadir' => $persentaseHadir,
             'persentaseTdkHadir' => $persentaseTdkHadir,
             'riwayatTdkHadir' => $riwayatTdkHadir,
+            'riwayatKehadiran' => $riwayatKehadiran,
 
 
             'checkData' => $checkData,
@@ -149,7 +158,7 @@ class RekapPresensiController extends Controller
 
 
             'jam_masuk' => $jam_masuk,
-            'jam_plg' => $jam_plg,
+            'absen_keluar' => $jam_plg,
 
 
             'months' => $months,
@@ -163,9 +172,10 @@ class RekapPresensiController extends Controller
     {
         //
         $id = Crypt::decryptString($data);
+        $no_pegawai = Pegawai::find($id)->no_pegawai;
         $intMonth = $request->month;
         $year = $request->year;
-        $hari = cal_days_in_month(CAL_GREGORIAN, $intMonth, $year);
+        $hari = cal_days_in_month(CAL_GREGORIAN, $intMonth, intval($year));
 
         $id_peraturan = Peraturan::latest('id')->pluck('id')->first();
 
@@ -174,35 +184,39 @@ class RekapPresensiController extends Controller
         $jam_plg = $peraturan->jam_plg;
 
 
-        $telat = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->where('jam_dtg', '>', $jam_masuk)
+        $telat = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('absen_masuk', '>', $jam_masuk)
+            ->count();
+        
+
+        $tepatWaktu = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('absen_masuk', '<', $jam_masuk)
+            ->where('absen_keluar', '>', $jam_plg)
+            ->count();
+        
+        // dd($tepatWaktu);
+
+        $pulangAwal = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('absen_keluar', '<', $jam_plg)
             ->count();
 
-        $tepatWaktu = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->where('jam_dtg', '<', $jam_masuk)
-            ->where('jam_plg', '>', $jam_plg)
+        $alpha = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('info_masuk', 4)
             ->count();
 
-        $pulangAwal = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->where('jam_plg', '<', $jam_plg)
+        $checkData = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
             ->count();
-
-        $alpha = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->where('ket', "Alpha")
-            ->count();
-
-        $checkData = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->count();
+        // dd($checkData);
 
         $pegawai = Pegawai::find($id);
         $hadir = ($hari - $alpha) / $hari * 100;
@@ -210,21 +224,27 @@ class RekapPresensiController extends Controller
         $TdkHadir = 100 - $persentaseHadir;
         $persentaseTdkHadir = number_format($TdkHadir, 2);
 
-        $riwayatTdkHadir = Presensi_harian::where('id_pegawai', $id)
-            ->where('ket', '!=', 'Hadir')
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->orderBy('tanggal', 'desc')
+        $riwayatTdkHadir = Absensi::where('no_pegawai', $no_pegawai)
+            ->where('info_masuk', '=', 4)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        $riwayatTdkDisiplin = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
+        $riwayatTdkDisiplin = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
             ->where(function ($query) use ($jam_masuk, $jam_plg) {
-                $query->where('jam_dtg', '>', $jam_masuk)
-                    ->orWhere('jam_plg', '<', $jam_plg);
+                $query->where('absen_masuk', '>', $jam_masuk)
+                    ->orWhere('absen_keluar', '<', $jam_plg);
             })->get();
 
+        $riwayatKehadiran = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('info_masuk', '!=', 4 )
+            ->get();
+            
         $months = [
             'January' => 1, 'Febuary' => 2, 'March' => 3,
             'April' => 4, 'May' => 5, 'June' => 6,
@@ -240,7 +260,7 @@ class RekapPresensiController extends Controller
             'persentaseHadir' => $persentaseHadir,
             'persentaseTdkHadir' => $persentaseTdkHadir,
             'riwayatTdkHadir' => $riwayatTdkHadir,
-
+            'riwayatKehadiran' => $riwayatKehadiran,
 
             'checkData' => $checkData,
 
@@ -251,7 +271,7 @@ class RekapPresensiController extends Controller
 
 
             'jam_masuk' => $jam_masuk,
-            'jam_plg' => $jam_plg,
+            'absen_keluar' => $jam_plg,
 
 
             'months' => $months,

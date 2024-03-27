@@ -154,10 +154,11 @@
                 <div class="panel-body">
                     <div class="text-center">
                         @if ($checkData != 0)
-                            <canvas id="chartPersentase"></canvas>
+                            <canvas id="chartPersentase" style="height: 30px"></canvas>
                         @else
                             Belum Ada Data!!
                         @endif
+                      
                     </div>
                 </div>
 
@@ -216,17 +217,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if ($riwayatTdkDisiplin->count())
-                                @foreach ($riwayatTdkDisiplin as $key => $p)
+                            @if ($riwayatKehadiran->count())
+                                @foreach ($riwayatKehadiran as $key => $p)
                                     <tr>
                                         <td>{{ $p->tanggal }}</td>
-                                        <td>{{ $p->jam_dtg }}</td>
-                                        <td>{{ $p->jam_plg }}</td>
+                                        <td>{{ $p->absen_masuk }}</td>
+                                        <td>{{ $p->absen_keluar }}</td>
                                         <td>
-                                            @if ($p->jam_dtg > $jam_masuk)
+                                            @if ($p->absen_masuk > $jam_masuk)
                                                 <span class="label label-danger">Terlambat</span>
-                                            @elseif ($p->jam_plg < $jam_plg) <span class="label bg-indigo">
-                                                    Pulang Awal</span>
+                                            @elseif ($p->absen_keluar < $jam_plg) <span class="label bg-indigo">
+                                                   <span class="label label-warning">Pulang Awal</span>
+                                            {{-- @elseif($p->jam_dtg > $jam_masuk && $p->jam_plg < $jam_plg) --}}
+                                            @else
+                                                 <span class="label label-success">On Time</span>
                                             @endif
                                         </td>
                                         <td hidden></td>
@@ -246,6 +250,7 @@
 
     @section('custom_script')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
         <script>
             $("#datepicker").datepicker({
                 format: "yyyy",

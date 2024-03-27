@@ -83,7 +83,7 @@
                     </div>
                 </div>
 
-                <div class="row">
+                {{-- <div class="row">
                     <div class="col-md-3 text-right">
                         <div class="form-group">
                             <h5>Publish Status</h5>
@@ -99,7 +99,7 @@
                             <i class="text-info">*Di Tampilkan/Sembunyikan dari Website</i>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
 
                 {{-- <div class="text-right mt-3">

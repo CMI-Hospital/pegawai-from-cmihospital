@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Models\Absensi;
 use App\Models\Cuti;
+use App\Models\Diskusi;
 use App\Models\Pegawai;
 use App\Models\Peraturan;
 use App\Models\Presensi_harian;
@@ -12,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Foreach_;
+use Carbon\Carbon;
 // use App\Models\Absensi;
 // use Carbon\Carbon;
 
@@ -34,7 +37,125 @@ class StaffDashboardController extends Controller
         $id = $user->id;
         $intMonth = date('m');
         $year = date('Y');
-        $hari = cal_days_in_month(CAL_GREGORIAN, $intMonth, date('Y'));
+        $hari = cal_days_in_month(CAL_GREGORIAN, $intMonth, date('Y')); 
+            
+        $bulan = intval(date('m'));
+        $tahun = intval(date('Y'));
+        $no_pegawai = $user->no_pegawai;
+
+            
+
+$results = DB::select('
+    SELECT
+        diskusi.no_pegawai AS no_pegawai,
+        diskusi.konten_tanggal AS konten_tanggal,
+        diskusi.konten_isi AS konten_isi,
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 1 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'1\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 2 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'2\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 3 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'3\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 4 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'4\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 5 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'5\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 6 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'6\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 7 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'7\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 8 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'8\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 9 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'9\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 10 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'10\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 11 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'11\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 12 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'12\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 13 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'13\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 14 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'14\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 15 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'15\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 16 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'16\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 17 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'17\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 18 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'18\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 19 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'19\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 20 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'20\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 21 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'21\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 22 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'22\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 23 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'23\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 24 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'24\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 25 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'25\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 26 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'26\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 27 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'27\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 28 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'28\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 29 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'29\',
+        CASE WHEN DAYOFMONTH(diskusi.konten_tanggal) = 30 AND diskusi.konten_isi IS NOT NULL THEN \'isi\' END AS \'30\'
+
+       
+    FROM
+        diskusi
+    WHERE
+        MONTH(diskusi.konten_tanggal) = ? 
+        AND YEAR(diskusi.konten_tanggal) = ?
+        AND diskusi.no_pegawai = ?
+    ORDER BY
+        diskusi.konten_tanggal DESC
+', [$bulan, $tahun, $no_pegawai]);
+
+
+
+$results_second = DB::table('view_konten_perbulan')
+->select('no_pegawai as nip', 'konten_tanggal as tanggal')
+->selectRaw('GROUP_CONCAT(`1`) as "1"')
+->selectRaw('GROUP_CONCAT(`2`) as "2"')
+->selectRaw('GROUP_CONCAT(`3`) as "3"')
+->selectRaw('GROUP_CONCAT(`4`) AS "4"')
+->selectRaw('GROUP_CONCAT(`5`) AS "5"')
+->selectRaw('GROUP_CONCAT(`6`) AS "6"')
+->selectRaw('GROUP_CONCAT(`7`) AS "7"')
+->selectRaw('GROUP_CONCAT(`8`) AS "8"')
+->selectRaw('GROUP_CONCAT(`9`) AS "9"')
+->selectRaw('GROUP_CONCAT(`10`) AS "10"')
+->selectRaw('GROUP_CONCAT(`11`) AS "11"')
+->selectRaw('GROUP_CONCAT(`12`) AS "12"')
+->selectRaw('GROUP_CONCAT(`13`) AS "13"')
+->selectRaw('GROUP_CONCAT(`14`) AS "14"')
+->selectRaw('GROUP_CONCAT(`15`) AS "15"')
+->selectRaw('GROUP_CONCAT(`16`) AS "16"')
+->selectRaw('GROUP_CONCAT(`17`) AS "17"')
+->selectRaw('GROUP_CONCAT(`18`) AS "18"')
+->selectRaw('GROUP_CONCAT(`19`) AS "19"')
+->selectRaw('GROUP_CONCAT(`20`) AS "20"')
+->selectRaw('GROUP_CONCAT(`21`) AS "21"')
+->selectRaw('GROUP_CONCAT(`22`) AS "22"')
+->selectRaw('GROUP_CONCAT(`23`) AS "23"')
+->selectRaw('GROUP_CONCAT(`24`) AS "24"')
+->selectRaw('GROUP_CONCAT(`25`) AS "25"')
+->selectRaw('GROUP_CONCAT(`26`) AS "26"')
+->selectRaw('GROUP_CONCAT(`27`) AS "27"')
+->selectRaw('GROUP_CONCAT(`28`) AS "28"')
+->selectRaw('GROUP_CONCAT(`29`) AS "29"')
+->selectRaw('GROUP_CONCAT(`30`) AS "30"')
+->selectRaw('GROUP_CONCAT(`31`) AS "31"')
+->whereYear('konten_tanggal', $tahun)
+->whereMonth('konten_tanggal', $bulan)
+->where('no_pegawai', $no_pegawai)
+->groupBy('no_pegawai')
+->get();
+
+
+
+
+    $jumtgl = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
+
+
+        $riwayatTdkHadir = Absensi::where('no_pegawai', $no_pegawai)
+        ->whereMonth('tanggal_absen', intval($intMonth))
+        ->whereYear('tanggal_absen', intval($year))
+        ->where('info_masuk', '!=', 4)
+        ->orderBy('tanggal_absen', 'desc')
+        ->get();
+        
+        // dd($riwayatTdkHadir);
+
+
+        $diskusis = Diskusi::where('no_pegawai', $user->no_pegawai)
+        ->whereMonth('konten_tanggal', $intMonth)
+        ->whereYear('konten_tanggal', $year)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+
 
         $id_peraturan = Peraturan::latest('id')->pluck('id')->first();
 
@@ -258,15 +379,15 @@ class StaffDashboardController extends Controller
 
         /*End Hitung Sisa Cuti*/
 
-        $alpha = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->where('ket', "Alpha")
+        $alpha = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('info_masuk', 4)
             ->count();
 
-        $checkData = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
+        $checkData = Absensi::where('no_pegawai', $no_pegawai)
+        ->whereMonth('tanggal_absen', intval($intMonth))
+        ->whereYear('tanggal_absen', intval($year))
             ->count();
 
         $pegawai = Pegawai::find($id);
@@ -274,10 +395,10 @@ class StaffDashboardController extends Controller
         $persentaseHadir = number_format($hadir, 2);
         $TdkHadir = 100 - $persentaseHadir;
         $persentaseTdkHadir = number_format($TdkHadir, 2);
-        $kehadiran = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->orderBy('tanggal', 'desc')
+        $kehadiran = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->orderBy('tanggal_absen', 'desc')
             ->get();
 
         $months = [
@@ -320,12 +441,22 @@ class StaffDashboardController extends Controller
         $JulDec = ['Jul' => '07', 'Aug' => '08', 'Sep' => '09', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12'];
 
         /* End Slip Gaji */
+        // foreach ($results_second as $key => $value) {
+        //     dd($key);
+        // }
 
+        
         return view('staff.dashboard', [
             'pegawai' => $pegawai,
             'JanJun' => $JanJun,
             'JulDec' => $JulDec,
+            'diskusis' => $diskusis,
 
+            'jmltgl' => $jumtgl,
+            'results' => $results,
+            'results_second' => $results_second,
+
+            'riwayatTdkHadir' => $riwayatTdkHadir,
             'persentaseHadir' => $persentaseHadir,
             'persentaseTdkHadir' => $persentaseTdkHadir,
             'kehadiran' => $kehadiran,
@@ -589,16 +720,16 @@ class StaffDashboardController extends Controller
         $sisaHamil = $batasHamil - ($Hamil[1] + $Hamil[2] + $Hamil[3] + $Hamil[4] + $Hamil[5] + $Hamil[6] + $Hamil[7] + $Hamil[8] + $Hamil[9] + $Hamil[10] + $Hamil[11] + $Hamil[12]);
 
         /*End Hitung Sisa Cuti*/
-
-        $alpha = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->where('ket', "Alpha")
+        $no_pegawai = $user->no_pegawai;
+        $alpha = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->where('info_masuk', 4)
             ->count();
 
-        $checkData = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
+        $checkData = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
             ->count();
 
 
@@ -607,10 +738,10 @@ class StaffDashboardController extends Controller
         $persentaseHadir = number_format($hadir, 2);
         $TdkHadir = 100 - $persentaseHadir;
         $persentaseTdkHadir = number_format($TdkHadir, 2);
-        $kehadiran = Presensi_harian::where('id_pegawai', $id)
-            ->whereMonth('tanggal', $intMonth)
-            ->whereYear('tanggal', $year)
-            ->orderBy('tanggal', 'desc')
+        $kehadiran = Absensi::where('no_pegawai', $no_pegawai)
+            ->whereMonth('tanggal_absen', intval($intMonth))
+            ->whereYear('tanggal_absen', intval($year))
+            ->orderBy('tanggal_absen', 'desc')
             ->get();
 
         $months = [
@@ -646,7 +777,6 @@ class StaffDashboardController extends Controller
 
         return view('staff.dashboard', [
             'pegawai' => $pegawai,
-
             'persentaseHadir' => $persentaseHadir,
             'persentaseTdkHadir' => $persentaseTdkHadir,
             'kehadiran' => $kehadiran,

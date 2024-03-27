@@ -61,6 +61,65 @@ class ArtikelWebController extends Controller
     }
 
 
+
+    public function artikelVerifikasi()
+    {
+        //
+        $user = Auth::user();
+        $thisYear = date('Y');
+
+        $artikel = ArtikelWeb::whereYear('created_at', $thisYear)
+        ->orderBy('created_at', 'desc')
+        ->get();
+        return view('artikelWeb.verifikasi', [
+            'artikel' =>$artikel,
+            'thisYear' => $thisYear,
+        ]);
+    }
+
+    
+
+
+    public function artikelVerifikasiByDate(Request $request)
+    {
+        //
+        $user = Auth::user();
+        $thisYear = $request->tahun;
+
+       $artikel = ArtikelWeb::whereYear('created_at', $thisYear)
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return view('artikelWeb.verifikasi', [
+            'artikel' =>$artikel,
+
+            'thisYear' => $thisYear,
+
+        ]);
+    }
+
+
+
+    public function verifikasi($id)
+    {
+        $data = ArtikelWeb::find($id);
+        $data->status_publish = 1;
+        $data->update();
+      
+        return response()->json($data);
+    }
+
+
+
+    public function unverifikasi($id)
+    {
+        $data = ArtikelWeb::find($id);
+        $data->status_publish = 0;
+        $data->update();
+
+        return response()->json($data);
+    }
+
+
     public function create()
     {
         $data['user'] = User::all();
@@ -81,7 +140,6 @@ class ArtikelWebController extends Controller
         $imageName1 = substr($data_artikel->id_artikel, 19) + 1 . '-' . $image1->getClientOriginalName();
         $request->file('gambar1')->storeAs('article_images', $imageName1.'.jpg');
         $imagePath1 = 'article_images/' . $imageName1;
-
 
         $image2 = $request->file('gambar2');
         $imageName2 = substr($data_artikel->id_artikel, 19) + 1 . '-' . $image2->getClientOriginalName();
@@ -108,7 +166,7 @@ class ArtikelWebController extends Controller
         $artikel->tagar = $request->tagar;
         $artikel->id_kategori = $request->kategori;
         $artikel->id_sub_kategori = $request->sub_kategori;
-        $artikel->status_publish = $request->publish_status;
+        $artikel->status_publish = 0;
         $artikel->date_publish = date('Y-m-d H:i:s');
         $artikel->id_user = Auth::user()->id;
         $artikel->id_penulis_artikel = $request->penulis;
