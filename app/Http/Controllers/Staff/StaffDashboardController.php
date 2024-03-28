@@ -9,6 +9,7 @@ use App\Models\Diskusi;
 use App\Models\Pegawai;
 use App\Models\Peraturan;
 use App\Models\Presensi_harian;
+use App\Models\SlipGaji;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -445,13 +446,42 @@ $results_second = DB::table('view_konten_perbulan')
         //     dd($key);
         // }
 
+
+        // Ambil data slip gaji by user login    
+        $gajiPokok = SlipGaji::where('no_pegawai', Auth::user()->no_pegawai)
+                               ->first();
+        
+        // Ambil data absen by user login, dengan kondisi
+        //     setelah tgl 26 ( karena tutup buku tgl 26)
+        //     dan kita ambil by bulan dan tahun waktu itu
+        $absen = Absensi::where('no_pegawai', Auth::user()->no_pegawai)
+                        ->whereMonth('tanggal_absen', $intMonth)
+                        ->whereYear('tanggal_absen', $year)
+                        ->where('tanggal_absen', '>', Carbon::create(intval($year), intval($intMonth), 26))
+                        ->get();
+        
+        // Menghitung absen setelah tgl 26 sampai hari ini               
+        $totalAbsen = 26 - count($absen);
+            
+        // Kondisi jika total absen null (supaya tidak error)
+        if (isset($totalAbsen)) {
+            
+            // Menghitung pendapatan dengan cara gaji pokok di kurangi total absen dari tgl 26
+            $totalPendapatan = $gajiPokok->gaji_pokok/$totalAbsen;
+        } else {
+
+            // err handler
+            $totalPendapatan = 0;
+        }
+      
+
         
         return view('staff.dashboard', [
             'pegawai' => $pegawai,
             'JanJun' => $JanJun,
             'JulDec' => $JulDec,
             'diskusis' => $diskusis,
-
+            'totalPendapatan' => $totalPendapatan,
             'jmltgl' => $jumtgl,
             'results' => $results,
             'results_second' => $results_second,
